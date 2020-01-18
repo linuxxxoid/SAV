@@ -1,0 +1,54 @@
+
+
+
+file_output_append:false$
+with_stdout("out.tex", print("
+\\documentclass[12pt]{article}
+
+\\usepackage[utf8x]{inputenc}
+\\usepackage[english,russian]{babel}
+\\usepackage[graphiks]
+\\usepackage{amsmath}
+\\usepackage[amsmath]{maxiplot}
+\\usepackage{epstopdf}
+\inclusegraphick
+
+\\begin{document}"))$
+file_output_append:true$
+L[1]: 1;
+L[2]: 1 - x;
+D[1]: diff(L[1], x);
+D[2]: diff(L[2], x);
+for i:1 step 1 thru 4 do (
+        L[i+2]: expand((1/(i+1))*((2*i+1-x)*L[i+1]-i*L[i])),
+        D[i+2]: diff(L[i+2], x)
+);
+with_stdout("out.tex", print("\\noindent L0=$", tex1(L[1]),
+                             "$\\\\L1=$", tex1(L[2]),
+                             "$\\\\L2=$", tex1(L[3]),
+                             "$\\\\L3=$", tex1(L[4]),
+                             "$\\\\L4=$", tex1(L[5]),
+                             "$\\\\L5=$", tex1(L[6]),
+                             "$\\\\L0'=$", tex1(D[1]),
+                             "$\\\\L1'=$", tex1(D[2]),
+                             "$\\\\L2'=$", tex1(D[3]),
+                             "$\\\\L3'=$", tex1(D[4]),
+                             "$\\\\L4'=$", tex1(D[5]),
+                             "$\\\\L5'=$", tex1(D[6]),
+                             "$"))$
+\begin{maximacmd}
+   plot2d([cos(x),sin(x^2)], [x,-3,3],
+          [plot_format, gnuplot],
+          [gnuplot_term, ps],
+          [run_viewer,false],
+          [gnuplot_out_file,"grafico1.eps"]);
+\end{maximacmd}
+\begin{center}
+  \IfFileExists{grafico1.eps}{\includegraphics[scale=0.60]{grafico1.eps}}{}
+\end{center}
+with_stdout("out.tex", print("\\end{document}"));
+printfile("out.tex");
+
+
+\\usepackage{pgfplots}
+

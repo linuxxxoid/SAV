@@ -1,0 +1,260 @@
+print("1.5.5")$
+a:limit(sum(i, i, 1, n)/(sqrt(9*n^4+1)), n, inf)$
+print(a, " = ", ev(a, nouns, simpsum))$
+
+
+print("1.7.5")$
+a:('limit((6*x^2+x-1)/(x+1/2), x, -1/2))$
+print(a, "=", ev(a, nouns))$
+
+
+print("1.12.5")$
+a:('limit((1+cos(%pi*x))/((tan(%pi*x))^2), x, 1))$
+print(a, "=", ev(a, nouns))$
+
+
+print("1.19.5")$
+a:('limit(((sin(3*%pi*x))/(sin(%pi*x)))^(sin(x-2))^2, x, 2))$
+print(a, "=", ev(a, nouns))$
+
+
+print("2.2.5")$
+y(x):=(x + sqrt(x^3))$
+n:(y(1) - (x-1)/(at(diff(y(x), x), x = 1)))$
+print("y = ", ev(n, nouns))$
+
+
+print("2.3.5")$
+a:('diff(acos(1/sqrt(1+2*x^2)), x))$
+print(a, " = ", ev(a, nouns))$
+
+
+print("2.11.5")$
+a:('diff((log(x))^3^x, x))$
+print(a, " = ", ev(a, nouns))$
+
+
+print("2.15.5")$
+x:('diff(log(t+sqrt(t^2+1)), t))$
+y:('diff(t*sqrt(t^2+1)))$
+print("Y'x = ", ev(ratexpand(y/x), nouns))$ 
+
+
+print("2.17.5")$
+y:(log10(5*x+2))$
+n:'sum(i, i, 1, inf)$
+a:'diff(y, x, n)$
+print("y = ", y)$
+print("производная n-го порядка = ", ev(a, nouns))$
+
+
+print("2.18.5")$
+y1:((log2(x))/(x^3))$
+n:3$
+a:('diff(y1, x, n))$
+print("y = ", y1)$
+print("производная", n, "-го порядка = ", ev(a, nouns))$
+
+
+print("3.6.5")$
+f: ((4*(x^3) + 3*(x^2) - 8*x - 2)/(2-3*(x^2)))$
+zn: (solve(2-3*(x^2), x))$
+l1:limit(f, x, ev(x, zn[1]), plus)$
+l2:limit(f, x, ev(x, zn[1]), minus)$
+l3:limit(f, x, ev(x, zn[2]), plus)$
+l4:limit(f, x, ev(x, zn[2]), minus)$
+if (l1 = inf or l1 = minf or l2 = inf or l2 = minf)
+	then print("вертикальная асимптота =", ev(zn[1], nouns))
+else print("вертикальных асимптот нет")$
+if (l3 = inf or l3 = minf or l4 = inf or l4 = minf)
+	then print("вертикальная асимптота ", ev(zn[2], nouns))
+else print("вертикальных асимптот нет")$
+
+hor_asm: expand(limit(f, x, inf))$
+if (ev(hor_asm, nouns) # minf and ev(hor_asm, nouns) # inf)
+	then print("горизонтальная асимптота ", ev(hor_asm, nouns))
+else
+	print("горизонтальных асимптот нет")$
+
+k: expand(limit(f/x, x, inf))$
+b: expand(limit(f - k*x, x, inf))$
+nakl_asm: k*x + b$
+print("наклонная асимптота = ", ev(nakl_asm, nouns))$
+plot2d([f, nakl_asm], [x, -10, 10], [y,-10,10]);
+
+
+
+print("4.4.5")$
+y:((x+cos(x))/(x^2+2*sin(x)))$
+f:('integrate(y, x, %pi, 2*(%pi)))$
+print(f, "= ", ev(f, nouns))$
+
+
+print("4.8.5")$
+f:('integrate((cos(x) - sin(x))/((1+sin(x))^2), x, 0, %pi/2))$
+print(f, "= ", ev(f, nouns))$
+
+
+print("4.14.5")$
+y:(sqrt(4-x^2))$
+f:('integrate(y, x, 0, 1))$
+print(f, "= ", ev(f, nouns))$
+
+
+print("4.17.5")$
+f:'integrate(sqrt(1 + ('diff(-log(cos(x)), x))^2), x, 0, %pi/6)$
+assume(cos(x) > 0)$
+print(f, "= ", ev(f, nouns))$
+
+
+print("5.4.5")$
+eqn:('diff(y, x) - y/(x+2) = x^2 + 2*x)$
+ans:('ic1(ode2(eqn, y, x), x = -1, y = 3/2))$
+print("решение задачи Коши при y(-1) = 3/2 ", eqn, " => ", ev(ans, nouns))$
+
+
+print("5.14.5")$
+eqn:('diff(y(x), x, 2) + 2*'diff(y(x),x) + 5*y = -sin(2*x))$
+ans:(ode2(eqn, y(x), x))$
+print("общее решение ДУ ", eqn, " => ", ev(ans, nouns))$
+
+
+print("6.1.5")$
+load(simplify_sum);
+f: sum(6/(n^2-10*n+24), n, 7, inf)$
+l: simplify_sum(sum(6/(n^2-10*n+24), n, 7, n))$
+
+print(f, " = ", ev(l, nouns))$
+
+
+print("6.4.5")$
+x: sum((2*n+2)!/((2^n)*(3*n+5)), n, 1, inf)$
+x1:(2*n+4)!/((2^(n+1))*(3*n+5))$
+x2:(2*n+2)!/((2^n)*(3*n+5))$
+x3:limit(x1/x2, n, inf)$
+if x3 > 1
+	then print("По признаку Даламбера ряд ", f, "расходится")
+else print("По признаку Даламбера ряд ", f, "сходится")$
+
+
+print("6.5.5")$
+f: sum(((2*n+1)/(3*n-2))^n^2, n, 1, inf)$
+f1:((2*n+3)/(3*n+1))^(n+1)^2$
+f2:((2*n+1)/(3*n-2))^(n*2)$
+f3:limit(f1/f2, n, inf)$
+if f3 > 1
+	then print("По признаку Даламбера ряд ", f, "расходится")
+else print("По признаку Даламбера ряд ",x, "сходится")$
+
+
+print("((7 раздел)8.2.5")$
+v: ((x^3)/2) + 6*(y^3) + 3*sqrt(6)*z^3$
+u: (x^2)/(y*z^2)$
+define (dv1(x, y, z), diff(v, x))$
+define (dv2(x, y, z), diff(v, y))$
+define (dv3(x, y, z), diff(v, z))$
+define (du1(x, y, z), diff(u, x))$
+define (du2(x, y, z), diff(u, y))$
+define (du3(x, y, z), diff(u, z))$
+f1: dv1(sqrt(2), 1/(sqrt(2)), 1/(sqrt(3)))$
+f2: dv2(sqrt(2), 1/(sqrt(2)), 1/(sqrt(3)))$
+f3: dv3(sqrt(2), 1/(sqrt(2)), 1/(sqrt(3)))$
+f4: du1(sqrt(2), 1/(sqrt(2)), 1/(sqrt(3)))$
+f5: du2(sqrt(2), 1/(sqrt(2)), 1/(sqrt(3)))$
+f6: du3(sqrt(2), 1/(sqrt(2)), 1/(sqrt(3)))$
+ch:'ratsimp(f1*f4+f2*f5+f3*f6)$
+zn:'ratsimp(sqrt((f1)^2 + (f2)^2 + (f3)^2) * sqrt((f4)^2 + (f5)^2 + (f6)^2))$
+ans: 'trigrat(acos(ch/zn))$
+print("угол между градиентами скалярных полей =", ev(ans, nouns))$
+
+
+print("((8 раздел)9.2.5")$
+c1(a, b):=(-2*a+b)$
+c2(a, b):=(3*a-2*b)$
+res1:c1(3, 5)/c2(3, 5)$
+res2:c1(5, 9)/c2(5, 9)$
+res3:c1(4, 7)/c2(4, 7)$
+if ((res2 = res3) and (res2 = res1))
+	then print("векторы  c1", ev(c1(a, b), nouns), "и c2", ev(c2(a,b), nouns), "коллинеарны")
+	else print("векторы  c1 = ", ev(c1(a, b), nouns), "и c2 = ", ev(c2(a, b), nouns), "НЕ коллинеарны")$
+
+
+
+print("(раздел 8)9.7.5")$
+m1(x, y, z):=(1*x + 2*y + 0*z)$
+m2(x, y, z):=(1*x + (-1)*y + 2*z)$
+m3(x, y, z):=(0*x + 1*y + (-1)*z)$
+m0(x, y, z):=(2*x + (-1)*y + 4*z)$
+A:matrix([x - m1(1, 0, 0), y - m1(0, 1, 0), z - m1(0, 0, 1)], [m2(1, 0, 0) - m1(1, 0, 0), m2(0, 1, 0) - m1(0, 1, 0), m2(0, 0, 1) - m1(0, 0, 1)],[m3(1, 0, 0) - m1(1, 0, 0), m3(0, 1, 0) - m1(0, 1, 0), m3(0, 0, 1) - m1(0, 0, 1)])$
+define (det(x, y, z), ratexpand(determinant(A)))$
+ch: ((det(1, 0, 0) - det(0, 0, 0))*(m0(1, 0, 0)) + (det(0, 1, 0) - det(0, 0, 0))*(m0(0, 1, 0)) + (det(0, 0, 1) - det(0, 0, 0))*(m0(0, 0, 1)) + det(0, 0, 0))$
+znam: (sqrt((det(1, 0, 0) - det(0, 0, 0))^2 + (det(0, 1, 0) - det(0, 0, 0))^2 + (det(0, 0, 1) - det(0, 0, 0))^2))$
+ans: (abs(ch))/znam$
+print("расстояние от точки M0 до плоскости, проходящей через точки M1, M2, M3 = ", ans)$
+
+
+print("(раздел 9)10.3.5")$
+print("найти общее решение для каждой из данных систем и проанализировать его структуру (указать базис пространства решений однородной системы, установить размерность пространства, выделить частное решение неоднородной системы)")$
+B1:matrix([1, 3, -1, -2], [2, 7, -4, -3], [1, 4, -3, -1])$
+print("Составим матрицу по второй системе:", B1)$
+Bsimple1:matrix([1, 3, -1, -2, 1], [0, 1, -2, 1, 1], [0, 0, 0, 0, 0])$
+print("Упростим матрицу и получим:", Bsimple1)$
+D0:1$
+Dd1:"D1"$
+Dd2:"D2"$
+print("Полагаем x3 = D1, x4 = D2")$
+Bbas1:matrix([-2], [1], [0], [0])$
+Bbas2:matrix([-5], [2], [1], [0])$
+Bbas3:matrix([-5], [-1], [0], [1])$
+O2:'(D0*Bbas1 + Dd1*Bbas2 + Dd2*Bbas3)$
+print("Общее решение 2 с.у.", O2)$
+D12:1$
+D22:1$
+O22:'(D0*Bbas1 + D12*Bbas2 + D22*Bbas3)$
+print("Частное решение 2 с.у. при D1 = D2 = 1", ev(O22, nouns))$
+print("Базис: ", "x1 = ", Bbas1, "x2 = ", Bbas2, "x1 = ", Bbas3)$
+print("Размерность линейного пространства решений равна 3")$
+B:matrix([2, -1, 2, -1, 1], [1, 10, -3, -2, -1], [4, 19, -4, -5, -1])$
+print("Составим матрицу по первой системе:", B)$
+Bsimple:matrix([1, 10, -3, -2, -1], [0, -21, 8, 3, 3], [0, 0, 0, 0, 0])$
+print("Упростим матрицу и получим:", Bsimple)$
+C11:"C1"$
+C21:"C2"$
+C31:"C3"$
+print("Полагаем x3 = C1, x4 = C2, x5 = C3")$
+Bas1:matrix([-17/21], [8/21], [1], [0], [0])$
+Bas2:matrix([4/7], [1/7], [0], [1], [0])$
+Bas3:matrix([-3/7], [1/7], [1], [0], [0])$
+O:'(C11*Bas1 + C21*Bas2 + C31*Bas3)$
+print("Общее решение 1 с.у.", ev(O, nouns))$
+C11:1$
+C21:1$
+C31:1$
+print("Частное решение 1 с.у. при С1 = С2 = С3 = 1", ev(O, nouns))$
+print("Базис: ", "x1 = ", Bas1, "x2 = ", Bas2, "x1 = ", Bas3)$
+print("Размерность линейного пространства решений равна 3")$
+
+
+print("(раздел 9)10.7.5")$
+A:matrix([2, 0, 1], [3, 0, 2], [-1, 1, 2])$
+T:matrix([1, -1, -1], [-1, 1, 2], [1, -2, 1])$
+T1:invert(T)$
+A1:T1.A$
+Ares:A1.T$
+print("Матрица линейного оператора в базисе (e1', e2', e3'), где e1'=e1-e2+e3, e2'=-e1+e2-2e3, e3'=-e1+2e2+e3, если она задана в базисе (e1, e2, e3) : ", Ares)$
+
+
+print("(раздел 9)10.11.5")$
+print("Привести квадратичную форму -4*(x1)^2-4*(x2)^2+2*(x3)^2-4*(x1x2)+8*(x1x3)-8*(x2x3) к каноническому виду ортогональным преобразованием")$
+A:matrix([-4, -2, 4], [-2, -4, -4], [4, -4, 2])$
+print("Матрица формы A", A)$
+A1:matrix([5],[1],[-2])$
+A2:matrix([0],[2],[1])$
+A3:matrix([-1],[1],[-2])$
+print("Векторы фундаментальной системы уравнений", "u1 = ", A1, "u2 = ", A2, "u3 = ", A3)$
+P:matrix([5/sqrt(30), 0, -1/sqrt(6)],[1/sqrt(30), 2/sqrt(5), 1/sqrt(6)],[-2/sqrt(30), 1/sqrt(5), -2/sqrt(6)])$
+print("Матрица ортогонального преобразования", ev(P, nouns))$
+print("Ответ 6*(y1)^2-6*(y2)^2-6*(y3)^2 и преобразование в виде прямых замен: ")$
+print("x1 = ", P[1,1], "y1", P[1,3], "y3")$
+print("x2 = ", P[2,1], "y1 + ", P[2,2], "y2 + ", P[2,3],"y3")$
+print("x3 = ", P[3,1], "y1 + ", P[3,2], "y2", P[3,3],"y3")$

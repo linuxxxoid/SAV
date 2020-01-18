@@ -1,0 +1,206 @@
+lab1([list]):= block([mult, len, i],
+            len:length(list),
+            mult:1,
+            if len = 0 then 
+                error("list is empty"),
+            for i:1 step 2 thru len do 
+                (if mod(list[i], 2) = 0 then mult: mult * list[i]),
+            print("Произведение четных аргументов = ", mult)
+)$
+
+
+fun([x]):= block([list, len, res],
+    	list:map(lambda([elem],if matrixp(elem) then elem else 0), x),
+    	sum(list[i], i, 1, length(list))
+)$
+
+
+lab2([fun]):= block([A, B, nu],
+            if length(fun) = 2 then 
+                fun: (if lfreeof([t], fun[2]) then rhs(fun[2]) else ev(t, solve(fun[2], t)[1])) - (if lfreeof([t], fun[1]) then rhs(fun[1]) else ev(t, solve(fun[1],t)[1]))
+            else fun: lhs(fun[1]) - rhs(fun[1]),
+            A: diff(fun, x),
+            B: diff(fun, y),
+            nu: 1/sqrt(A^2 + B^2),
+            if fun - (A*x + B*y) * nu > 0 then nu: nu * (-1),
+            print("Нормальное уравнение прямой: ", ratexpand(fun*nu), " = 0")
+)$
+
+
+lab3([fun]):= block([prd, A1, A2, B1, B2, C1, C2, distance, angle, det1, det2, x0, y0, chisl, znam],
+            len: length(fun),
+            if len = 2 then (
+                f1: lhs(fun[1]) - rhs(fun[1]),
+                f2: lhs(fun[2]) - rhs(fun[2])
+            )
+            else if len = 4 then (
+                f1: (if lfreeof([t], fun[2]) then rhs(fun[2]) else ev(t, solve(fun[2], t)[1])) - (if lfreeof([t], fun[1]) then rhs(fun[1]) else ev(t, solve(fun[1],t)[1])),
+                f2: (if lfreeof([t], fun[4]) then rhs(fun[4]) else ev(t, solve(fun[4], t)[1])) - (if lfreeof([t], fun[3]) then rhs(fun[3]) else ev(t, solve(fun[3],t)[1]))
+            ),
+            A1: diff(f1,x),
+            A2: diff(f2,x),
+            B1: diff(f1,y),
+            B2: diff(f2,y),
+            C1: ratexpand(f1 - (A1*x + B1*y)),
+            C2: ratexpand(f2 - (A2*x + B2*y)),
+            prd: determinant(matrix([A1, B1], [A2, B2])),
+            if (prd = 0) then (
+                if (A2/A1 = B2/B1 and B2/B1 = C2/C1) then print("Прямые совпадают")     
+                else if (A2/A1 = B2/B1 and B2/B1 # C2/C1) then (
+                    distance: abs(C2-C1)/(sqrt(A^2 + B^2)),
+                    print("Расстояние между параллельными прямыми = ", distance)
+                )
+            )
+            else (
+                det1: determinant(matrix([C1, diff(f1, y)], [C2, diff(f2, y)])),
+                det2: determinant(matrix([diff(f1, x), C1], [diff(f2, x), C2])),
+                x0: det1/prd,
+                y0: det2/prd,
+                print("Прямые пересекаются в точке (x, y) = (", x0,", ", y0, ")"),
+                chisl: determinant(matrix([A1, A2], [B1, B2])),
+                znam: A1*A2 + B1*B2,
+                angle: atan(chisl/znam),
+                print("Угол между пересекающимися прямыми = ", angle)
+            )
+)$
+
+
+lab4(uu,u,i,o):= block([len, A, B, C, D, A2, B2, C2, x, y, z, plosk, sec, pryam, m, n, p, x0, y0, z0, distance, angle, dot, proection, p1m, p2m, p3m],
+            x1: ev(x, solve(uu, x)[1]),
+            y1: ev(y, solve(u, y)[1]),
+            z1: ev(z, solve(i, z)[1]),
+            plosk: lhs(o) - rhs(o),
+            m: diff(x1, t),
+            n: diff(y1, t),
+            p: diff(z1, t),
+            x0: x1 - m*x,
+            y0: y1 - n*y,
+            z0: z1 - p*z,
+            A: diff(plosk, x),
+            B: diff(plosk, y),
+            C: diff(plosk, z),
+            D: plosk - (A*x + B*y + C*z),
+            if (A*m + B*n + C*p # 0) then (
+                t0: ev(t, solve(A*x1 + B*y1 + C*z1 + D = 0, t)[1]),
+                define(f1(t),x1),
+                define(f2(t), y1),
+                define(f3(t), z1),
+                dot: [f1(t0), f2(t0), f3(t0)],
+                angle: asin(abs(A*m + B*n + C*p)/(sqrt(A^2 + B^2 + C^2) * sqrt(m^2 + n^2 + p^2))),
+                print("Прямая пересекает плоскость в точке", dot),
+                print("Угол между прямой и плоскостью", angle),
+                sec: determinant(matrix([x-x0, m, A],[y-y0, n, B],[z-z0, p, C])),
+                A2: diff(sec, x),
+                B2: diff(sec, y),
+                C2: diff(sec, z),
+                p1m: determinant(matrix([B, C], [B2, C2])),
+                p2m: determinant(matrix([C, A], [C2, A2])),
+                p3m: determinant(matrix([A, B], [A2, B2])),
+                proection: ratexpand(((x+dot[1])/p1m) - ((y+dot[2])/p2m) - ((z+dot[3])/p3m) = 0),
+                print("Проекция прямой на плоскость: ", proection)
+            )
+            else if (A*m + B*n + C*p = 0 and A*z0 + B*y0 + C*z0 + D = 0) then (
+                print("Прямая лежит на плоскости")
+            )
+            else if (A*m + B*n + C*p = 0 and A*z0 + B*y0 + C*z0 + D # 0) then (
+                print("Прямая параллельна плоскости"),
+                distance: ratexpand(abs(A*x0 + B*y0 + C*z0 + D)/(sqrt(A^2 + B^2 + C^2))),
+                print("Расстояние = ", distance)
+            )       
+)$
+
+
+lab5([koor]):= block([ finish1, finish2, A1, A2, B1, B2, Z1, Z2, C1, C2],
+            dx0: koor[3],
+            dy0: koor[4],
+            dz0: koor[5], 
+            f1: lhs(koor[1]) - rhs(koor[1]),
+            f2: lhs(koor[2]) - rhs(koor[2]),
+            Z1: diff(f1, z),
+            Z2: diff(f2, z),
+            ur1: f1 - Z1*z = 0,
+            ur2: f2 - Z2*z = 0,
+            dot1: solve([ur1, ur2], [x,y,z])[1],
+            x0: ev(x, dot1[1]),
+            y0: ev(y, dot1[2]),
+            z0: 0,
+            ur3: f1 - Z1*z + Z1 = 0,
+            ur4: f2 - Z2*z + Z2 = 0,
+            dot2: solve([ur3, ur4], [x,y,z])[1],
+            x1: ev(x, dot2[1]),
+            y1: ev(y, dot2[2]),
+            z1: 1,
+            pryam: (dx0 - x0)/(x1 - x0) - (dy0 - y0)/(y1 - y0) - (dz0 - z0)/(z1 - z0),
+            if (pryam = 0) then
+                print("Точка (", dx0,", ", dy0,", ", dz0, ") лежит на прямой, в которой пересекаются плоскости.")
+            else if (pryam > 0) then
+                print("Точка (", dx0,", ", dy0,", ", dz0, ") лежит справа от прямой, в которой пересекаются плоскости.")
+            else if (pryam < 0) then
+                print("Точка (", dx0,", ", dy0,", ", dz0, ") лежит слева от прямой, в которой пересекаются плоскости.")
+)$
+
+
+
+
+coeffABCD(eq):= (block([A,B,C,D], 
+				eq:lhs(eq), 
+				D:ev(eq,x=0,y=0,z=0), 
+				A:coeff(eq, x), 
+				B:coeff(eq, y), 
+				C:coeff(eq, z), 
+				[A,B,C,D] 
+))$
+
+norm(eq):= (block([A,B,C,D], 
+			eq:lhs(eq), 
+			A:coeff(eq, x), 
+			B:coeff(eq, y), 
+			C:coeff(eq, z), 
+			[A,B,C] 
+))$ 
+
+point_p(a, M):= (block([x:0, y:0, z:0, k:coeffABCD(a)], 
+	x:((k[2]**2+k[3]**2)*M[1]-k[1]*k[2]*M[2]-k[1]*k[3]*M[3]-k[1]*k[4])/(k[1]**2+k[2]**2+k[3]**2), 
+	y:(-k[1]*k[2]*M[1]+(k[1]**2+k[3]**2)*M[2]-k[2]*k[3]*M[3]-k[1]*k[4])/(k[1]**2+k[2]**2+k[3]**2), 
+	z:(-k[1]*k[3]*M[1]-k[2]*k[3]*M[2]+(k[1]**2+k[2]**2)*M[3]-k[3]*k[4])/(k[1]**2+k[2]**2+k[3]**2), 
+	[x,y,z] 
+))$
+
+f(a1, a2, M):= (block([M_01:0, M_02:0,s1:0, s2:2, n1:norm(a1), n2:norm(a2)], 
+	if ev(lhs(a1), x=M[1], y=M[2], z=M[3])=0 and ev(lhs(a2), x=M[1], y=M[2], z=M[3])=0 then 
+		print("Точка лежит на пересечении плоскостей") 
+	else if ev(lhs(a1), x=M[1], y=M[2], z=M[3])=0 then 
+		print("Точка лежит в первой плоскости " , a1) 
+	else if ev(lhs(a2), x=M[1], y=M[2], z=M[3])=0 then 
+		print("Точка лежит во второй плоскости ", a2) 
+	else 
+		print("Точка лежит вне плоскотей"), 
+	M_01: point_p(a1, M), 
+	M_02: point_p(a2, M), 
+	print("Проекция точки на плоскость", a1, 'M_01, "=", M_01), 
+	s1: M - M_01, 
+	if s1.n1 > 0 then print("Точка расположена над плоскостью") 
+	else print("Точка расположена под плоскостью"), 
+	D:ev(lhs(a1),x=0,y=0,z=0), 
+	A:coeff(lhs(a1), x), 
+	B:coeff(lhs(a1), y), 
+	C:coeff(lhs(a1), z), 
+	rasst:(A*M[1]+B*M[2]+C*M[3]+D)/sqrt(A^2+B^2+C^2),
+	print("Расстояние до плоскости = ", rasst),
+	print("Проекция точки на плоскость",a2,'M_02,"=",M_02), 
+	s2: M - M_02, 
+	if s2.n1 > 0 then print("Точка расположена над плоскостью") 
+	else print("Точка расположена под плоскостью"), 
+	D:ev(lhs(a2),x=0,y=0,z=0), 
+	A:coeff(lhs(a2), x), 
+	B:coeff(lhs(a2), y), 
+	C:coeff(lhs(a2), z), 
+	rasst:(A*M[1]+B*M[2]+C*M[3]+D)/sqrt(A^2+B^2+C^2),
+	print("Расстояние до плоскости = ", rasst),
+	[M_01, M_02]
+))$ 
+
+ur1:x+y+z=3$ 
+ur2:2*x-y+z=2$ 
+M:[0, 0, -5];
+f(ur1, ur2, M);
